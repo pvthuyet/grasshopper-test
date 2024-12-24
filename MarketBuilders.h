@@ -46,8 +46,8 @@ private:
 
   /* ??? Helper function if needed */
     // Function to send a message to a single subscriber
-    template <typename MessageType, typename TSub>
-    void sendMessageToSubscriber(const MessageType& message, TSub* subscriber) {
+    template <class MessageType, class Subscriber>
+    void sendMessageToSubscriber(const MessageType& message, Subscriber* subscriber) {
         subscriber->onBook(message);
     }
 };
@@ -63,7 +63,7 @@ public:
     auto publishOnBook(/*???*/ const AmericanExchangeOrderBook& qb) {
         /*???*/
         std::apply(
-          [&](auto*... sub) { (sendMessageToSubscriber(qb, sub), ...); },
+          [&](auto*... subscriber) { (sendMessageToSubscriber(qb, subscriber), ...); },
           subscribers_);
     }
 
@@ -87,8 +87,8 @@ private:
 
   /* ??? Helper function if needed */
     // Function to send a message to a single subscriber
-    template <typename MessageType, typename TSub>
-    void sendMessageToSubscriber(const MessageType& message, TSub* subscriber) {
+    template <class MessageType, class Subscriber>
+    void sendMessageToSubscriber(const MessageType& message, Subscriber* subscriber) {
         subscriber->onBook(message);
     }
 };

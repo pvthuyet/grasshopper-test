@@ -16,14 +16,14 @@ public:
     template <class MessageType>
     void publishMessage(const MessageType& message) {
         std::apply(
-            [&](auto*... sub) { (sendMessageToSubscriber(message, sub), ...); },
+            [&](auto*... subscriber) { (sendMessageToSubscriber(message, subscriber), ...); },
             subscribers_);
     }
 
 private:
     // Function to send a message to a single subscriber
-    template <typename MessageType, typename TSub>
-    void sendMessageToSubscriber(const MessageType& message, TSub* subscriber) {
+    template <class MessageType, class Subscriber>
+    void sendMessageToSubscriber(const MessageType& message, Subscriber* subscriber) {
         subscriber->onMessage(message);
     }
 
