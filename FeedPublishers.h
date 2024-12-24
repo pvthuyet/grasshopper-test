@@ -6,7 +6,8 @@
 
 // Base publisher class template
 template <class... SubscriberType>
-class FeedPublisherBase {
+class FeedPublisherBase 
+{
 public:
     // Constructor to initialize subscribers as pointers
     explicit FeedPublisherBase(SubscriberType*... subscribers) : subscribers_(subscribers...) {}
@@ -32,18 +33,18 @@ private:
 
 // Specific publisher class template
 template <class... SubscriberType>
-class SingaporeExchangeFeedPublisher : public FeedPublisherBase<SubscriberType...> {
+class SingaporeExchangeFeedPublisher : public FeedPublisherBase<SubscriberType...> 
+{
 public:
     using FeedPublisherBase<SubscriberType...>::FeedPublisherBase; // Inherit constructor
 };
 
-// template</* ??? */>
-// class AmericanExchangeFeedPublisher : public FeedPublisherBase</* ??? */> {
-// public:
-//     AmericanExchangeFeedPublisher(/* ??? */ subscribers)
-//         : FeedPublisherBase</* ??? */>(/* ??? */) {}
-
-// };
+template<class... SubscriberType>
+class AmericanExchangeFeedPublisher : public FeedPublisherBase<SubscriberType...>
+{
+public:
+    using FeedPublisherBase<SubscriberType...>::FeedPublisherBase; // Inherit constructor
+};
 
 // Function to deduce types of objects and instantiate FeedPublisherBase
 template <template <class...> class FeedPublisherType, class... SubscriberType>

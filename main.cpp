@@ -10,18 +10,18 @@ int main()
   SingleAmericanMarketStrategy  singleMktStrat;
 
   SingaporeExchangeMarketBuilder<CrossMarketStrategy> singExchMarketBuilder(&crossMktStrat);
-  // AmericanExchangeMarketBuilder<CrossMarketStrategy, SingleAmericanMarketStrategy> amExchMarketBuilder(&crossMktStrat, &singleMktStrat);
+  AmericanExchangeMarketBuilder<CrossMarketStrategy, SingleAmericanMarketStrategy> amExchMarketBuilder(&crossMktStrat, &singleMktStrat);
 
   SingaporeExchangeAddOrder msg1;
-  // AmericanExchangeAddOrder msg2;
+  AmericanExchangeAddOrder msg2;
 
   auto singExchPublisher = createFeedPublisher<SingaporeExchangeFeedPublisher>(&crossMktStrat, &singExchMarketBuilder);
-  // auto amExchPublisher   = createFeedPublisher<AmericanExchangeFeedPublisher>(&singleMktStrat, &crossMktStrat, &amExchMarketBuilder);
+  auto amExchPublisher   = createFeedPublisher<AmericanExchangeFeedPublisher>(&singleMktStrat, &crossMktStrat, &amExchMarketBuilder);
 
   singExchPublisher.publishMessage(msg1);
-  // amExchPublisher.publishMessage(msg2);
+  amExchPublisher.publishMessage(msg2);
   singExchPublisher.publishMessage(SingaporeExchangeTradeExecuted());
-  // amExchPublisher.publishMessage(AmericanExchangeTradeExecuted());
+  amExchPublisher.publishMessage(AmericanExchangeTradeExecuted());
 
   /*
   Optional ???: add ThreeMarketsStrategy listening to all events from
