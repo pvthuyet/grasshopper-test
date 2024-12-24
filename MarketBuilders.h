@@ -21,7 +21,7 @@ public:
     auto publishOnBook(/*???*/ const SingaporeExchangeOrderBook& qb) {
       /*???*/
       std::apply(
-          [&](auto*... sub) { (sendMessageToSubscriber(qb, sub), ...); },
+          [&](auto*... subscriber) { (sendMessageToSubscriber(qb, subscriber), ...); },
           subscribers_);
     }
 
