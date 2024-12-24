@@ -9,7 +9,7 @@ template <class... SubscriberType>
 class FeedPublisherBase {
 public:
     // Constructor to initialize subscribers as pointers
-    explicit FeedPublisherBase(SubscriberType*... subs) : subscribers_(subs...) {}
+    explicit FeedPublisherBase(SubscriberType*... subscribers) : subscribers_(subscribers...) {}
 
     // Function to invoke `onMessage` for all subscribers
     template <class MessageType>
