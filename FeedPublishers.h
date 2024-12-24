@@ -5,15 +5,15 @@
 #include <utility>
 
 // Base publisher class template
-template <class... TSubscriber>
+template <class... SubscriberType>
 class FeedPublisherBase {
 public:
     // Constructor to initialize subscribers as pointers
-    explicit FeedPublisherBase(TSubscriber*... subs) : subscribers_(subs...) {}
+    explicit FeedPublisherBase(SubscriberType*... subs) : subscribers_(subs...) {}
 
-    // Function to invoke `onMessageHandle` for all subscribers
-    template <class TMessage>
-    void publishMessage(const TMessage& message) {
+    // Function to invoke `onMessage` for all subscribers
+    template <class MessageType>
+    void publishMessage(const MessageType& message) {
         std::apply(
             [&](auto*... sub) { (sendMessageToSubscriber(message, sub), ...); },
             subscribers_);
@@ -21,21 +21,20 @@ public:
 
 private:
     // Function to send a message to a single subscriber
-    template <typename TMessage, typename TSub>
-    void sendMessageToSubscriber(const TMessage& message, TSub* subscriber) {
-        //subscriber->onMessageHandle(*subscriber, message);
+    template <typename MessageType, typename TSub>
+    void sendMessageToSubscriber(const MessageType& message, TSub* subscriber) {
         subscriber->onMessage(message);
     }
 
     // Tuple to store pointers to subscribers
-    std::tuple<TSubscriber*...> subscribers_;
+    std::tuple<SubscriberType*...> subscribers_;
 };
 
 // Specific publisher class template
-template <class... TSubscriber>
-class SingaporeExchangeFeedPublisher : public FeedPublisherBase<TSubscriber...> {
+template <class... SubscriberType>
+class SingaporeExchangeFeedPublisher : public FeedPublisherBase<SubscriberType...> {
 public:
-    using FeedPublisherBase<TSubscriber...>::FeedPublisherBase; // Inherit constructor
+    using FeedPublisherBase<SubscriberType...>::FeedPublisherBase; // Inherit constructor
 };
 
 // template</* ??? */>
@@ -47,8 +46,8 @@ public:
 // };
 
 // Function to deduce types of objects and instantiate FeedPublisherBase
-template <template <class...> class FeedPublisherType, class... TSubscriber>
-auto createFeedPublisher(TSubscriber*... subscribers) 
+template <template <class...> class FeedPublisherType, class... SubscriberType>
+auto createFeedPublisher(SubscriberType*... subscribers) 
 {
-    return FeedPublisherType<TSubscriber...>(subscribers...);
+    return FeedPublisherType<SubscriberType...>(subscribers...);
 }
