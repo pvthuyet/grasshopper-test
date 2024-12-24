@@ -1,6 +1,6 @@
 # Compiler settings
 CXX = g++               # C++ compiler
-CXXFLAGS = -std=c++23 -Wall   # Compiler flags (e.g., C++23 and all warnings)
+CXXFLAGS = -std=gnu++2b -Wall   # Compiler flags (e.g., C++23 and all warnings)
 LDFLAGS =                # Linker flags (if needed)
 
 # Files
