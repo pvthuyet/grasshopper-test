@@ -1,71 +1,41 @@
 #pragma once
 #include <iostream>
 #include <string>
+#include <tuple>
+#include <utility>
 
-template <typename... TSubscriber>
+// Base publisher class template
+template <class... TSubscriber>
 class FeedPublisherBase {
 public:
-    FeedPublisherBase(TSubscriber... subs) : subscribers_(std::move(subs)...) {}
+    // Constructor to initialize subscribers as pointers
+    explicit FeedPublisherBase(TSubscriber*... subs) : subscribers_(subs...) {}
 
-    // A function to invoke `onMessage` for all subscribers
+    // Function to invoke `onMessageHandle` for all subscribers
     template <class TMessage>
-    auto publishMessage(const TMessage& message) {
+    void publishMessage(const TMessage& message) {
         std::apply(
-            [&](auto &... sub) { (sendMessageToSubscriber(message, sub), ...);}, 
+            [&](auto*... sub) { (sendMessageToSubscriber(message, sub), ...); },
             subscribers_);
     }
 
-    // Function to publish data to all subscribers
-    // template <typename TData>
-    // void publish(const TData& data) {
-    //     publishToSubscribers(data);
-    // }
-
 private:
-    // Helper function to call publish on each subscriber
-    // template <std::size_t Index = 0, typename TData>
-    // void publishToSubscribers(const TData& data) {
-    //     if constexpr (Index < sizeof...(TSubscriber)) {
-    //         // Call publish on the current subscriber
-    //         std::get<Index>(subscribers_).publish(data);
-    //         // Recur to the next subscriber
-    //         publishToSubscribers<Index + 1>(data);
-    //     }
-    // }
-
-    auto sendMessageToSubscriber(const auto& message, auto &subscriber) -> void {
-        //subscriber.onMessage(message); 
-        // for (auto &device : device_list) {
-        //     device.update(); 
-        // }
+    // Function to send a message to a single subscriber
+    template <typename TMessage, typename TSub>
+    void sendMessageToSubscriber(const TMessage& message, TSub* subscriber) {
+        //subscriber->onMessageHandle(*subscriber, message);
+        subscriber->onMessage(message);
     }
 
-    // Tuple to store subscribers
-    std::tuple<TSubscriber...> subscribers_;
+    // Tuple to store pointers to subscribers
+    std::tuple<TSubscriber*...> subscribers_;
 };
 
-
-// Example Subscriber Class for testing
-class SubscriberExample1 {
+// Specific publisher class template
+template <class... TSubscriber>
+class SingaporeExchangeFeedPublisher : public FeedPublisherBase<TSubscriber...> {
 public:
-    void publish(const std::string& message) {
-        std::cout << "[SubscriberExample1] Received message: " << message << std::endl;
-    }
-};
-
-class SubscriberExample2 {
-public:
-    void publish(const std::string& message) {
-        std::cout << "[SubscriberExample2] Received message: " << message << std::endl;
-    }
-};
-
-template<typename TStrategy, typename TMarketBuilder>
-class SingaporeExchangeFeedPublisher : public FeedPublisherBase<TStrategy, TMarketBuilder> {
-public:
-    SingaporeExchangeFeedPublisher(/* ??? */ subscribers)
-        : FeedPublisherBase</* ??? */>(/* ??? */) {}
-
+    using FeedPublisherBase<TSubscriber...>::FeedPublisherBase; // Inherit constructor
 };
 
 // template</* ??? */>
@@ -76,8 +46,9 @@ public:
 
 // };
 
-// // Function to deduce types of objects and instantiate FeedPublisherBase
-// template </* ??? */>
-// auto createFeedPublisher(/* ??? */ subscribers) {
-//     return FeedPublisherType</* ??? */>(/* ??? */);
-// }
+// Function to deduce types of objects and instantiate FeedPublisherBase
+template <template <class...> class FeedPublisherType, class... TSubscriber>
+auto createFeedPublisher(TSubscriber*... subscribers) 
+{
+    return FeedPublisherType<TSubscriber...>(subscribers...);
+}

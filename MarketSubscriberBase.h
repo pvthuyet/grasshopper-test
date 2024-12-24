@@ -2,16 +2,17 @@
 template <typename OrderBookType>
 class MarketSubscriberBase {
 public:
-  template </* ??? */>
-  auto onBookHandle(/* ??? */ orderBook) {
+  template<class Derived>
+  auto onBookHandle(Derived& derived, const OrderBookType& orderBook) {
     /* ??? */
+    derived.onBook(orderBook);
   }
 private:
   auto onBook(const auto& orderBook); // defer implementation to derived classes
 };
 
 
-template </* ??? */>
+template <class... OrderBookTypes>
 struct MarketSubscriber : public MarketSubscriberBase<OrderBookTypes>... {
   /* ??? */
 };

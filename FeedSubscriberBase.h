@@ -3,9 +3,10 @@
 template <typename MessageType>
 class FeedSubscriberBase {
 public:
-  /* ??? */
-  auto onMessageHandle(/* ??? */ const MessageType& message) {
+  template<class Derived>
+  auto onMessageHandle(Derived& derived, const MessageType& message) {
     /* ??? - need to call the onMessage in derived class */
+    derived.onMessage(message);
   }
 
 private:
@@ -14,8 +15,8 @@ private:
 
 
 // Subscriber class
-template </* ??? */>
-struct FeedSubscriber : public FeedSubscriberBase</* ??? */>... {
+template <class... MessageType>
+struct FeedSubscriber : public FeedSubscriberBase<MessageType>... {
     /* ??? */
 };
 
