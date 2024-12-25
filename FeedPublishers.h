@@ -46,6 +46,13 @@ public:
     using FeedPublisherBase<SubscriberType...>::FeedPublisherBase; // Inherit constructor
 };
 
+template<class... SubscriberType>
+class EuropeanExchangeFeedPublisher : public FeedPublisherBase<SubscriberType...>
+{
+public:
+    using FeedPublisherBase<SubscriberType...>::FeedPublisherBase; // Inherit constructor
+};
+
 // Function to deduce types of objects and instantiate FeedPublisherBase
 template <template <class...> class FeedPublisherType, class... SubscriberType>
 auto createFeedPublisher(SubscriberType*... subscribers) 

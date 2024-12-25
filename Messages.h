@@ -25,3 +25,16 @@ struct AmericanExchangeTradeExecuted {
     uint16_t participantTwoId_;
     int64_t price_;
 };
+
+struct EuropeanExchangeAddOrder {
+    uint64_t timeStamp_;
+    uint64_t orderId_;
+    int64_t price_;
+};
+
+struct EuropeanExchangeTradeExecuted {
+    uint64_t timeStamp_;
+    uint16_t participantOneId_;
+    uint16_t participantTwoId_;
+    int64_t price_;
+};

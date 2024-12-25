@@ -15,4 +15,9 @@ struct AmericanExchangeOrderBook {
   uint64_t askSize0_;
 };
 
-
+struct EuropeanExchangeOrderBook {
+  int64_t bid0_;
+  int64_t ask0_;
+  uint64_t bidSize0_;
+  uint64_t askSize0_;
+};

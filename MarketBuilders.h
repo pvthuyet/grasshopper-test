@@ -5,6 +5,12 @@
 #include "FeedSubscriberBase.h"
 
 
+// Function to send a message to a single subscriber
+template <class MessageType, class Subscriber>
+void sendMessageToSubscriber(const MessageType& message, Subscriber* subscriber) {
+    subscriber->onBook(message);
+}
+
 /*
 ========================================================
 Market Builder ( subscribe to feed and publish )
@@ -45,11 +51,6 @@ private:
   std::tuple<SubscriberType*...> subscribers_;
 
   /* ??? Helper function if needed */
-    // Function to send a message to a single subscriber
-    template <class MessageType, class Subscriber>
-    void sendMessageToSubscriber(const MessageType& message, Subscriber* subscriber) {
-        subscriber->onBook(message);
-    }
 };
 
 template<class... SubscriberType>
@@ -86,10 +87,40 @@ private:
   std::tuple<SubscriberType*...> subscribers_;
 
   /* ??? Helper function if needed */
-    // Function to send a message to a single subscriber
-    template <class MessageType, class Subscriber>
-    void sendMessageToSubscriber(const MessageType& message, Subscriber* subscriber) {
-        subscriber->onBook(message);
-    }
 };
 
+template<class... SubscriberType>
+class EuropeanExchangeMarketBuilder : public FeedSubscriber<AmericanExchangeAddOrder, AmericanExchangeTradeExecuted>
+{
+public:
+    // Constructor
+    explicit EuropeanExchangeMarketBuilder(SubscriberType*... subscribers) : subscribers_(subscribers...) {};
+
+    //template </*???*/>
+    auto publishOnBook(/*???*/ const EuropeanExchangeOrderBook& qb) {
+        /*???*/
+        std::apply(
+          [&](auto*... subscriber) { (sendMessageToSubscriber(qb, subscriber), ...); },
+          subscribers_);
+    }
+
+    auto onMessage(const EuropeanExchangeAddOrder& msg) {
+      EuropeanExchangeOrderBook qb;
+      qb.askSize0_ = 300;
+      qb.bidSize0_ = 400;
+      publishOnBook(qb);
+    };
+
+    auto onMessage(const EuropeanExchangeTradeExecuted& msg) {
+      EuropeanExchangeOrderBook qb;
+      qb.askSize0_ = 11;
+      qb.bidSize0_ = 12;
+      publishOnBook(qb);
+    };
+
+private:
+  // A data structure to hold pointers to the varying number of subscriber members
+  std::tuple<SubscriberType*...> subscribers_;
+
+  /* ??? Helper function if needed */
+};
