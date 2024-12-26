@@ -10,12 +10,12 @@
 Market Builder ( subscribe to feed and publish )
 ========================================================
 */
-template<class... SubscriberType>
+template<class... SubscriberRegion>
 class SingaporeExchangeMarketBuilder //: public FeedSubscriber<SingaporeExchangeAddOrder, SingaporeExchangeTradeExecuted> 
 {
 public:
     // Constructor
-    explicit SingaporeExchangeMarketBuilder(SubscriberType*... subscribers) : subscribers_(subscribers...) {
+    explicit SingaporeExchangeMarketBuilder(SubscriberRegion*... subscribers) : subscribers_(subscribers...) {
         static_assert(HasOnMessageMethod<SingaporeExchangeMarketBuilder, SingaporeExchangeAddOrder>);
         static_assert(HasOnMessageMethod<SingaporeExchangeMarketBuilder, SingaporeExchangeTradeExecuted>);
     };
@@ -45,17 +45,17 @@ public:
 
 private:
   // A data structure to hold pointers to the varying number of subscriber members
-  std::tuple<SubscriberType*...> subscribers_;
+  std::tuple<SubscriberRegion*...> subscribers_;
 
   /* ??? Helper function if needed */
 };
 
-template<class... SubscriberType>
+template<class... SubscriberRegion>
 class AmericanExchangeMarketBuilder //: public FeedSubscriber<AmericanExchangeAddOrder, AmericanExchangeTradeExecuted>
 {
 public:
     // Constructor
-    explicit AmericanExchangeMarketBuilder(SubscriberType*... subscribers) : subscribers_(subscribers...) {
+    explicit AmericanExchangeMarketBuilder(SubscriberRegion*... subscribers) : subscribers_(subscribers...) {
       static_assert(HasOnMessageMethod<AmericanExchangeMarketBuilder, AmericanExchangeAddOrder>);
       static_assert(HasOnMessageMethod<AmericanExchangeMarketBuilder, AmericanExchangeTradeExecuted>);
     };
@@ -84,17 +84,17 @@ public:
 
 private:
   // A data structure to hold pointers to the varying number of subscriber members
-  std::tuple<SubscriberType*...> subscribers_;
+  std::tuple<SubscriberRegion*...> subscribers_;
 
   /* ??? Helper function if needed */
 };
 
-template<class... SubscriberType>
+template<class... SubscriberRegion>
 class EuropeanExchangeMarketBuilder //: public FeedSubscriber<EuropeanExchangeAddOrder, EuropeanExchangeTradeExecuted>
 {
 public:
     // Constructor
-    explicit EuropeanExchangeMarketBuilder(SubscriberType*... subscribers) : subscribers_(subscribers...) {
+    explicit EuropeanExchangeMarketBuilder(SubscriberRegion*... subscribers) : subscribers_(subscribers...) {
       static_assert(HasOnMessageMethod<EuropeanExchangeMarketBuilder, EuropeanExchangeAddOrder>);
       static_assert(HasOnMessageMethod<EuropeanExchangeMarketBuilder, EuropeanExchangeTradeExecuted>);
     };
@@ -123,7 +123,7 @@ public:
 
 private:
   // A data structure to hold pointers to the varying number of subscriber members
-  std::tuple<SubscriberType*...> subscribers_;
+  std::tuple<SubscriberRegion*...> subscribers_;
 
   /* ??? Helper function if needed */
 };

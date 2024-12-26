@@ -6,12 +6,12 @@
 #include "utils.h"
 
 // Base publisher class template
-template <class... SubscriberType>
+template <class... SubscriberRegion>
 class FeedPublisherBase 
 {
 public:
     // Constructor to initialize subscribers as pointers
-    explicit FeedPublisherBase(SubscriberType*... subscribers) : subscribers_(subscribers...) {}
+    explicit FeedPublisherBase(SubscriberRegion*... subscribers) : subscribers_(subscribers...) {}
 
     // Function to invoke `onMessage` for all subscribers
     template <class MessageType>
@@ -24,34 +24,34 @@ public:
 private:
 
     // Tuple to store pointers to subscribers
-    std::tuple<SubscriberType*...> subscribers_;
+    std::tuple<SubscriberRegion*...> subscribers_;
 };
 
 // Specific publisher class template
-template <class... SubscriberType>
-class SingaporeExchangeFeedPublisher : public FeedPublisherBase<SubscriberType...> 
+template <class... SubscriberRegion>
+class SingaporeExchangeFeedPublisher : public FeedPublisherBase<SubscriberRegion...> 
 {
 public:
-    using FeedPublisherBase<SubscriberType...>::FeedPublisherBase; // Inherit constructor
+    using FeedPublisherBase<SubscriberRegion...>::FeedPublisherBase; // Inherit constructor
 };
 
-template<class... SubscriberType>
-class AmericanExchangeFeedPublisher : public FeedPublisherBase<SubscriberType...>
+template<class... SubscriberRegion>
+class AmericanExchangeFeedPublisher : public FeedPublisherBase<SubscriberRegion...>
 {
 public:
-    using FeedPublisherBase<SubscriberType...>::FeedPublisherBase; // Inherit constructor
+    using FeedPublisherBase<SubscriberRegion...>::FeedPublisherBase; // Inherit constructor
 };
 
-template<class... SubscriberType>
-class EuropeanExchangeFeedPublisher : public FeedPublisherBase<SubscriberType...>
+template<class... SubscriberRegion>
+class EuropeanExchangeFeedPublisher : public FeedPublisherBase<SubscriberRegion...>
 {
 public:
-    using FeedPublisherBase<SubscriberType...>::FeedPublisherBase; // Inherit constructor
+    using FeedPublisherBase<SubscriberRegion...>::FeedPublisherBase; // Inherit constructor
 };
 
 // Function to deduce types of objects and instantiate FeedPublisherBase
-template <template <class...> class FeedPublisherType, class... SubscriberType>
-auto createFeedPublisher(SubscriberType*... subscribers) -> FeedPublisherType<SubscriberType...>
+template <template <class...> class FeedPublisherType, class... SubscriberRegion>
+auto createFeedPublisher(SubscriberRegion*... subscribers) -> FeedPublisherType<SubscriberRegion...>
 {
-    return FeedPublisherType<SubscriberType...>(subscribers...);
+    return FeedPublisherType<SubscriberRegion...>(subscribers...);
 }
