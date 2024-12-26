@@ -3,6 +3,13 @@
 #include <string>
 #include <tuple>
 #include <utility>
+#include <concepts>
+
+// Define a concept to check if the class has a specific function
+template <typename MessageType, typename Subscriber>
+concept HasOnMessageMethod = requires(MessageType message, Subscriber subscriber) {
+    { subscriber.onMessage(message) };
+};
 
 // Base publisher class template
 template <class... SubscriberType>
@@ -16,14 +23,16 @@ public:
     template <class MessageType>
     void publishMessage(const MessageType& message) {
         std::apply(
-            [&](auto*... subscriber) { (sendMessageToSubscriber(message, subscriber), ...); },
+            [&](auto*... subscriber) { (notifyOnMessageToSubscriber(message, subscriber), ...); },
             subscribers_);
     }
 
 private:
     // Function to send a message to a single subscriber
     template <class MessageType, class Subscriber>
-    void sendMessageToSubscriber(const MessageType& message, Subscriber* subscriber) {
+    void notifyOnMessageToSubscriber(const MessageType& message, Subscriber* subscriber)
+    requires HasOnMessageMethod<MessageType, Subscriber>
+    {
         subscriber->onMessage(message);
     }
 
@@ -55,7 +64,7 @@ public:
 
 // Function to deduce types of objects and instantiate FeedPublisherBase
 template <template <class...> class FeedPublisherType, class... SubscriberType>
-auto createFeedPublisher(SubscriberType*... subscribers) 
+auto createFeedPublisher(SubscriberType*... subscribers) -> FeedPublisherType<SubscriberType...>
 {
     return FeedPublisherType<SubscriberType...>(subscribers...);
 }

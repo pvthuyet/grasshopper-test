@@ -4,11 +4,11 @@ template <typename OrderBookType>
 class MarketSubscriberBase {
 public:
   //template </* ??? */>
-  auto onBookHandle(const auto& orderBook) {
+  auto onBookHandle(const OrderBookType& orderBook) {
     /* ??? */
   }
 private:
-  auto onBook(const auto& orderBook); // defer implementation to derived classes
+  auto onBook(const OrderBookType& orderBook); // defer implementation to derived classes
 };
 
 template <typename ...OrderBookTypes>

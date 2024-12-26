@@ -4,10 +4,16 @@
 #include "FeedPublishers.h"
 #include "FeedSubscriberBase.h"
 
+// Define a concept to check if the class has a specific function
+template <typename MessageType, typename Subscriber>
+concept HasOnBookMethod = requires(MessageType message, Subscriber subscriber) {
+    { subscriber.onBook(message) };
+};
 
 // Function to send a message to a single subscriber
 template <class MessageType, class Subscriber>
-void sendMessageToSubscriber(const MessageType& message, Subscriber* subscriber) {
+void notifyOnBookToSubscriber(const MessageType& message, Subscriber* subscriber)
+requires HasOnBookMethod<MessageType, Subscriber> {
     subscriber->onBook(message);
 }
 
@@ -27,7 +33,7 @@ public:
     auto publishOnBook(/*???*/ const SingaporeExchangeOrderBook& qb) {
       /*???*/
       std::apply(
-          [&](auto*... subscriber) { (sendMessageToSubscriber(qb, subscriber), ...); },
+          [&](auto*... subscriber) { (notifyOnBookToSubscriber(qb, subscriber), ...); },
           subscribers_);
     }
 
@@ -64,7 +70,7 @@ public:
     auto publishOnBook(/*???*/ const AmericanExchangeOrderBook& qb) {
         /*???*/
         std::apply(
-          [&](auto*... subscriber) { (sendMessageToSubscriber(qb, subscriber), ...); },
+          [&](auto*... subscriber) { (notifyOnBookToSubscriber(qb, subscriber), ...); },
           subscribers_);
     }
 
@@ -100,7 +106,7 @@ public:
     auto publishOnBook(/*???*/ const EuropeanExchangeOrderBook& qb) {
         /*???*/
         std::apply(
-          [&](auto*... subscriber) { (sendMessageToSubscriber(qb, subscriber), ...); },
+          [&](auto*... subscriber) { (notifyOnBookToSubscriber(qb, subscriber), ...); },
           subscribers_);
     }
 
