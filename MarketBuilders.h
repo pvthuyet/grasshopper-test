@@ -3,19 +3,7 @@
 #include "OrderBooks.h"
 #include "FeedPublishers.h"
 #include "FeedSubscriberBase.h"
-
-// Define a concept to check if the class has a specific function
-template <typename MessageType, typename Subscriber>
-concept HasOnBookMethod = requires(MessageType message, Subscriber subscriber) {
-    { subscriber.onBook(message) };
-};
-
-// Function to send a message to a single subscriber
-template <class MessageType, class Subscriber>
-void notifyOnBookToSubscriber(const MessageType& message, Subscriber* subscriber)
-requires HasOnBookMethod<MessageType, Subscriber> {
-    subscriber->onBook(message);
-}
+#include "utils.h"
 
 /*
 ========================================================
@@ -23,17 +11,20 @@ Market Builder ( subscribe to feed and publish )
 ========================================================
 */
 template<class... SubscriberType>
-class SingaporeExchangeMarketBuilder : public FeedSubscriber<SingaporeExchangeAddOrder, SingaporeExchangeTradeExecuted> 
+class SingaporeExchangeMarketBuilder //: public FeedSubscriber<SingaporeExchangeAddOrder, SingaporeExchangeTradeExecuted> 
 {
 public:
     // Constructor
-    explicit SingaporeExchangeMarketBuilder(SubscriberType*... subscribers) : subscribers_(subscribers...) {};
+    explicit SingaporeExchangeMarketBuilder(SubscriberType*... subscribers) : subscribers_(subscribers...) {
+        static_assert(HasOnMessageMethod<SingaporeExchangeMarketBuilder, SingaporeExchangeAddOrder>);
+        static_assert(HasOnMessageMethod<SingaporeExchangeMarketBuilder, SingaporeExchangeTradeExecuted>);
+    };
 
     //template </*???*/>
     auto publishOnBook(/*???*/ const SingaporeExchangeOrderBook& qb) {
       /*???*/
       std::apply(
-          [&](auto*... subscriber) { (notifyOnBookToSubscriber(qb, subscriber), ...); },
+          [&](auto*... subscriber) { (notifyOnBookToSubscriber(subscriber, qb), ...); },
           subscribers_);
     }
 
@@ -60,17 +51,20 @@ private:
 };
 
 template<class... SubscriberType>
-class AmericanExchangeMarketBuilder : public FeedSubscriber<AmericanExchangeAddOrder, AmericanExchangeTradeExecuted>
+class AmericanExchangeMarketBuilder //: public FeedSubscriber<AmericanExchangeAddOrder, AmericanExchangeTradeExecuted>
 {
 public:
     // Constructor
-    explicit AmericanExchangeMarketBuilder(SubscriberType*... subscribers) : subscribers_(subscribers...) {};
+    explicit AmericanExchangeMarketBuilder(SubscriberType*... subscribers) : subscribers_(subscribers...) {
+      static_assert(HasOnMessageMethod<AmericanExchangeMarketBuilder, AmericanExchangeAddOrder>);
+      static_assert(HasOnMessageMethod<AmericanExchangeMarketBuilder, AmericanExchangeTradeExecuted>);
+    };
 
     //template </*???*/>
     auto publishOnBook(/*???*/ const AmericanExchangeOrderBook& qb) {
         /*???*/
         std::apply(
-          [&](auto*... subscriber) { (notifyOnBookToSubscriber(qb, subscriber), ...); },
+          [&](auto*... subscriber) { (notifyOnBookToSubscriber(subscriber, qb), ...); },
           subscribers_);
     }
 
@@ -96,17 +90,20 @@ private:
 };
 
 template<class... SubscriberType>
-class EuropeanExchangeMarketBuilder : public FeedSubscriber<AmericanExchangeAddOrder, AmericanExchangeTradeExecuted>
+class EuropeanExchangeMarketBuilder //: public FeedSubscriber<EuropeanExchangeAddOrder, EuropeanExchangeTradeExecuted>
 {
 public:
     // Constructor
-    explicit EuropeanExchangeMarketBuilder(SubscriberType*... subscribers) : subscribers_(subscribers...) {};
+    explicit EuropeanExchangeMarketBuilder(SubscriberType*... subscribers) : subscribers_(subscribers...) {
+      static_assert(HasOnMessageMethod<EuropeanExchangeMarketBuilder, EuropeanExchangeAddOrder>);
+      static_assert(HasOnMessageMethod<EuropeanExchangeMarketBuilder, EuropeanExchangeTradeExecuted>);
+    };
 
     //template </*???*/>
     auto publishOnBook(/*???*/ const EuropeanExchangeOrderBook& qb) {
         /*???*/
         std::apply(
-          [&](auto*... subscriber) { (notifyOnBookToSubscriber(qb, subscriber), ...); },
+          [&](auto*... subscriber) { (notifyOnBookToSubscriber(subscriber, qb), ...); },
           subscribers_);
     }
 

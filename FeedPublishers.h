@@ -3,13 +3,7 @@
 #include <string>
 #include <tuple>
 #include <utility>
-#include <concepts>
-
-// Define a concept to check if the class has a specific function
-template <typename MessageType, typename Subscriber>
-concept HasOnMessageMethod = requires(MessageType message, Subscriber subscriber) {
-    { subscriber.onMessage(message) };
-};
+#include "utils.h"
 
 // Base publisher class template
 template <class... SubscriberType>
@@ -23,18 +17,11 @@ public:
     template <class MessageType>
     void publishMessage(const MessageType& message) {
         std::apply(
-            [&](auto*... subscriber) { (notifyOnMessageToSubscriber(message, subscriber), ...); },
+            [&](auto*... subscriber) { (notifyOnMessageToSubscriber(subscriber, message), ...); },
             subscribers_);
     }
 
 private:
-    // Function to send a message to a single subscriber
-    template <class MessageType, class Subscriber>
-    void notifyOnMessageToSubscriber(const MessageType& message, Subscriber* subscriber)
-    requires HasOnMessageMethod<MessageType, Subscriber>
-    {
-        subscriber->onMessage(message);
-    }
 
     // Tuple to store pointers to subscribers
     std::tuple<SubscriberType*...> subscribers_;

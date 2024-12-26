@@ -5,10 +5,16 @@
 #include "OrderBooks.h"
 #include "FeedSubscriberBase.h"
 #include "MarketSubscriberBase.h"
+#include "utils.h"
 
-struct SingleAmericanMarketStrategy:
-    public FeedSubscriber<AmericanExchangeAddOrder, AmericanExchangeTradeExecuted>,
-    public MarketSubscriber<AmericanExchangeOrderBook>
+// I didn't see the benefit of FeedSubscriber<>, MarketSubscriber<> ???
+// Because we never deal with base class.
+//
+// The question here how complier know to forces the concrete classes implement the onMessage(), onBook() ???
+
+struct SingleAmericanMarketStrategy//:
+    //public FeedSubscriber<AmericanExchangeAddOrder, AmericanExchangeTradeExecuted>,
+    //public MarketSubscriber<AmericanExchangeOrderBook>
 {
   auto onMessage(const AmericanExchangeTradeExecuted& msg) {
     std::cout << "SingleAmericanMarketStrategy Do clever strategy level stuff with AmericanExchange:  "  << std::endl;
@@ -24,8 +30,13 @@ struct SingleAmericanMarketStrategy:
   };
 };
 
-struct CrossMarketStrategy: public FeedSubscriber<SingaporeExchangeAddOrder, SingaporeExchangeTradeExecuted, AmericanExchangeAddOrder, AmericanExchangeTradeExecuted>,
-                 public MarketSubscriber<SingaporeExchangeOrderBook, AmericanExchangeOrderBook>
+static_assert(HasOnMessageMethod<SingleAmericanMarketStrategy, AmericanExchangeAddOrder>);
+static_assert(HasOnMessageMethod<SingleAmericanMarketStrategy, AmericanExchangeTradeExecuted>);
+static_assert(HasOnBookMethod<SingleAmericanMarketStrategy, AmericanExchangeOrderBook>);
+
+
+struct CrossMarketStrategy //: public FeedSubscriber<SingaporeExchangeAddOrder, SingaporeExchangeTradeExecuted, AmericanExchangeAddOrder, AmericanExchangeTradeExecuted>,
+                 //public MarketSubscriber<SingaporeExchangeOrderBook, AmericanExchangeOrderBook>
 {
   auto onMessage(const SingaporeExchangeAddOrder& msg) {
     std::cout << "CrossMarketStrategy receive add order from SingaporeExchange: "  << std::endl;
@@ -52,16 +63,23 @@ struct CrossMarketStrategy: public FeedSubscriber<SingaporeExchangeAddOrder, Sin
     std::cout << "CrossMarketStrategy receives AmericanExchange book update: "  << std::endl;
     std::cout << qb.askSize0_ << "; bidSize0_: " << qb.bidSize0_ << std::endl;
   };
-
 };
+
+static_assert(HasOnMessageMethod<CrossMarketStrategy, SingaporeExchangeAddOrder>);
+static_assert(HasOnMessageMethod<CrossMarketStrategy, SingaporeExchangeTradeExecuted>);
+static_assert(HasOnMessageMethod<CrossMarketStrategy, AmericanExchangeAddOrder>);
+static_assert(HasOnMessageMethod<CrossMarketStrategy, AmericanExchangeTradeExecuted>);
+static_assert(HasOnBookMethod<CrossMarketStrategy, SingaporeExchangeOrderBook>);
+static_assert(HasOnBookMethod<CrossMarketStrategy, AmericanExchangeOrderBook>);
+
 
 /*
   Optional ???: add ThreeMarketsStrategy listening to all events from
   SingaporeExchange, AmericanExchange and EuropeanExchange here.
 */
 
-struct ThreeMarketsStrategy: public FeedSubscriber<SingaporeExchangeAddOrder, SingaporeExchangeTradeExecuted, AmericanExchangeAddOrder, AmericanExchangeTradeExecuted, EuropeanExchangeAddOrder, EuropeanExchangeTradeExecuted>,
-                             public MarketSubscriber<SingaporeExchangeOrderBook, AmericanExchangeOrderBook, EuropeanExchangeOrderBook>
+struct ThreeMarketsStrategy //: public FeedSubscriber<SingaporeExchangeAddOrder, SingaporeExchangeTradeExecuted, AmericanExchangeAddOrder, AmericanExchangeTradeExecuted, EuropeanExchangeAddOrder, EuropeanExchangeTradeExecuted>,
+                            //  public MarketSubscriber<SingaporeExchangeOrderBook, AmericanExchangeOrderBook, EuropeanExchangeOrderBook>
 {
   auto onMessage(const SingaporeExchangeAddOrder& msg) {
     std::cout << "ThreeMarketsStrategy receive add order from SingaporeExchange: "  << std::endl;
@@ -101,5 +119,14 @@ struct ThreeMarketsStrategy: public FeedSubscriber<SingaporeExchangeAddOrder, Si
     std::cout << "ThreeMarketsStrategy receives EuropeanExchange book update: "  << std::endl;
     std::cout << qb.askSize0_ << "; bidSize0_: " << qb.bidSize0_ << std::endl;
   };
-
 };
+
+static_assert(HasOnMessageMethod<ThreeMarketsStrategy, SingaporeExchangeAddOrder>);
+static_assert(HasOnMessageMethod<ThreeMarketsStrategy, SingaporeExchangeTradeExecuted>);
+static_assert(HasOnMessageMethod<ThreeMarketsStrategy, AmericanExchangeAddOrder>);
+static_assert(HasOnMessageMethod<ThreeMarketsStrategy, AmericanExchangeTradeExecuted>);
+static_assert(HasOnMessageMethod<ThreeMarketsStrategy, EuropeanExchangeAddOrder>);
+static_assert(HasOnMessageMethod<ThreeMarketsStrategy, EuropeanExchangeTradeExecuted>);
+static_assert(HasOnBookMethod<ThreeMarketsStrategy, SingaporeExchangeOrderBook>);
+static_assert(HasOnBookMethod<ThreeMarketsStrategy, AmericanExchangeOrderBook>);
+static_assert(HasOnBookMethod<ThreeMarketsStrategy, EuropeanExchangeOrderBook>);
