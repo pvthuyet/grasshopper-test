@@ -12,9 +12,9 @@
 //
 // The question here how complier know to forces the concrete classes implement the onMessage(), onBook() ???
 
-struct SingleAmericanMarketStrategy//:
-    //public FeedSubscriber<AmericanExchangeAddOrder, AmericanExchangeTradeExecuted>,
-    //public MarketSubscriber<AmericanExchangeOrderBook>
+struct SingleAmericanMarketStrategy:
+    public FeedSubscriber<AmericanExchangeAddOrder, AmericanExchangeTradeExecuted>,
+    public MarketSubscriber<AmericanExchangeOrderBook>
 {
   auto onMessage(const AmericanExchangeTradeExecuted& msg) {
     std::cout << "SingleAmericanMarketStrategy Do clever strategy level stuff with AmericanExchange:  "  << std::endl;
@@ -35,8 +35,8 @@ static_assert(HasOnMessageMethod<SingleAmericanMarketStrategy, AmericanExchangeT
 static_assert(HasOnBookMethod<SingleAmericanMarketStrategy, AmericanExchangeOrderBook>);
 
 
-struct CrossMarketStrategy //: public FeedSubscriber<SingaporeExchangeAddOrder, SingaporeExchangeTradeExecuted, AmericanExchangeAddOrder, AmericanExchangeTradeExecuted>,
-                 //public MarketSubscriber<SingaporeExchangeOrderBook, AmericanExchangeOrderBook>
+struct CrossMarketStrategy : public FeedSubscriber<SingaporeExchangeAddOrder, SingaporeExchangeTradeExecuted, AmericanExchangeAddOrder, AmericanExchangeTradeExecuted>,
+                 public MarketSubscriber<SingaporeExchangeOrderBook, AmericanExchangeOrderBook>
 {
   auto onMessage(const SingaporeExchangeAddOrder& msg) {
     std::cout << "CrossMarketStrategy receive add order from SingaporeExchange: "  << std::endl;
@@ -78,8 +78,8 @@ static_assert(HasOnBookMethod<CrossMarketStrategy, AmericanExchangeOrderBook>);
   SingaporeExchange, AmericanExchange and EuropeanExchange here.
 */
 
-struct ThreeMarketsStrategy //: public FeedSubscriber<SingaporeExchangeAddOrder, SingaporeExchangeTradeExecuted, AmericanExchangeAddOrder, AmericanExchangeTradeExecuted, EuropeanExchangeAddOrder, EuropeanExchangeTradeExecuted>,
-                            //  public MarketSubscriber<SingaporeExchangeOrderBook, AmericanExchangeOrderBook, EuropeanExchangeOrderBook>
+struct ThreeMarketsStrategy : public FeedSubscriber<SingaporeExchangeAddOrder, SingaporeExchangeTradeExecuted, AmericanExchangeAddOrder, AmericanExchangeTradeExecuted, EuropeanExchangeAddOrder, EuropeanExchangeTradeExecuted>,
+                              public MarketSubscriber<SingaporeExchangeOrderBook, AmericanExchangeOrderBook, EuropeanExchangeOrderBook>
 {
   auto onMessage(const SingaporeExchangeAddOrder& msg) {
     std::cout << "ThreeMarketsStrategy receive add order from SingaporeExchange: "  << std::endl;

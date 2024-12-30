@@ -4,7 +4,9 @@ template <typename MessageType>
 class FeedSubscriberBase {
 public:
   /* ??? */
-  auto onMessageHandle(/* ??? */ const MessageType& message) {
+  template<typename Derived>
+  auto onMessageHandle(Derived* derived, const MessageType& message) {
+    derived->onMessage(message);
     /* ??? - need to call the onMessage in derived class */
   }
 

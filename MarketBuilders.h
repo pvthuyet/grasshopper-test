@@ -11,7 +11,7 @@ Market Builder ( subscribe to feed and publish )
 ========================================================
 */
 template<class... SubscriberRegion>
-class SingaporeExchangeMarketBuilder //: public FeedSubscriber<SingaporeExchangeAddOrder, SingaporeExchangeTradeExecuted> 
+class SingaporeExchangeMarketBuilder : public FeedSubscriber<SingaporeExchangeAddOrder, SingaporeExchangeTradeExecuted> 
 {
 public:
     // Constructor
@@ -51,7 +51,7 @@ private:
 };
 
 template<class... SubscriberRegion>
-class AmericanExchangeMarketBuilder //: public FeedSubscriber<AmericanExchangeAddOrder, AmericanExchangeTradeExecuted>
+class AmericanExchangeMarketBuilder : public FeedSubscriber<AmericanExchangeAddOrder, AmericanExchangeTradeExecuted>
 {
 public:
     // Constructor
@@ -90,7 +90,7 @@ private:
 };
 
 template<class... SubscriberRegion>
-class EuropeanExchangeMarketBuilder //: public FeedSubscriber<EuropeanExchangeAddOrder, EuropeanExchangeTradeExecuted>
+class EuropeanExchangeMarketBuilder : public FeedSubscriber<EuropeanExchangeAddOrder, EuropeanExchangeTradeExecuted>
 {
 public:
     // Constructor

@@ -12,7 +12,7 @@ concept HasOnMessageMethod = requires(Subscriber subscriber, const MessageType& 
 template <class Subscriber, class MessageType>
 void notifyOnMessageToSubscriber(Subscriber* subscriber, const MessageType& message)
 requires HasOnMessageMethod<Subscriber, MessageType> {
-    subscriber->onMessage(message);
+    subscriber->template FeedSubscriberBase<MessageType>::template onMessageHandle<Subscriber>(subscriber, message);
 }
 
 // Define a concept to check if the class has a specific function
